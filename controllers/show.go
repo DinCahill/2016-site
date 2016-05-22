@@ -80,10 +80,10 @@ func (sc *ShowController) GetTimeslot(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := struct {
-		Timeslot myradio.Timeslot
+		Timeslot  myradio.Timeslot
 		Tracklist []myradio.TracklistItem
 	}{
-		Timeslot: timeslot,
+		Timeslot:  timeslot,
 		Tracklist: tracklist,
 	}
 
@@ -111,10 +111,10 @@ func (sc *ShowController) GetSeason(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := struct {
-		Season myradio.Season
+		Season    myradio.Season
 		Timeslots []myradio.Timeslot
 	}{
-		Season: season,
+		Season:    season,
 		Timeslots: timeslots,
 	}
 

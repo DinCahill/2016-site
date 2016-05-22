@@ -168,23 +168,23 @@ func (sc *ScheduleWeekController) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	data := struct {
-		StartDate time.Time
-		EndDate   time.Time
-		Schedule  myradio.Schedule
-		NumDays   int
+		StartDate  time.Time
+		EndDate    time.Time
+		Schedule   myradio.Schedule
+		NumDays    int
 		DaysOfWeek []string
-		Times []string
-		Year      string
-		Week      string
+		Times      []string
+		Year       string
+		Week       string
 	}{
-		StartDate: startDate,
-		EndDate:   endDate,
-		Schedule:  schedule,
-		NumDays:   len(schedule),
+		StartDate:  startDate,
+		EndDate:    endDate,
+		Schedule:   schedule,
+		NumDays:    len(schedule),
 		DaysOfWeek: daysOfWeek,
-		Times: times,
-		Year: year,
-		Week: week,
+		Times:      times,
+		Year:       year,
+		Week:       week,
 	}
 
 	err = utils.RenderTemplate(w, sc.config.PageContext, data, "schedule_week.tmpl")

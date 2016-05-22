@@ -2,8 +2,8 @@ package models
 
 import (
 	"github.com/UniversityRadioYork/myradio-go"
-	"time"
 	"sort"
+	"time"
 )
 
 // ShowModel is the model for the Show controller.
@@ -73,13 +73,13 @@ func TableTimes(durations DurationSlice) (times []string, err error) {
 
 type TableCell struct {
 	Timeslot myradio.Timeslot
-	RowSpan int
+	RowSpan  int
 }
 
 type TableRow struct {
-	Date time.Time
+	Date    time.Time
 	TimeStr string
-	Cells []TableCell
+	Cells   []TableCell
 }
 
 type Table []TableRow
