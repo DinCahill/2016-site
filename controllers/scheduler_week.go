@@ -4,6 +4,7 @@ import (
 	//"github.com/UniversityRadioYork/2016-site/models"
 	"errors"
 	"fmt"
+	"github.com/UniversityRadioYork/2016-site/models"
 	"github.com/UniversityRadioYork/2016-site/structs"
 	"github.com/UniversityRadioYork/2016-site/utils"
 	"github.com/UniversityRadioYork/myradio-go"
@@ -137,7 +138,7 @@ func isoWeekToDate(year, week, weekday string) (time.Time, error) {
 // ScheduleWeek's Get takes three request variables--year, week, and weekday--,
 // which correspond to an ISO 8601 weekday-format time.
 func (sc *ScheduleWeekController) Get(w http.ResponseWriter, r *http.Request) {
-	//sm := models.NewScheduleModel(sc.session)
+	sm := models.NewScheduleModel(sc.session)
 
 	vars := mux.Vars(r)
 
@@ -154,19 +155,36 @@ func (sc *ScheduleWeekController) Get(w http.ResponseWriter, r *http.Request) {
 	}
 	endDate := startDate.AddDate(0, 0, 7)
 
-	//timeslots, err := sm.GetShow(id)
-	//if err != nil {
-	//	//@TODO: Do something proper here, render 404 or something
-	//	log.Println(err)
-	//	return
-	//}
-
+	schedule, err := sm.GetWeek(year, week, true)
+	if err != nil {
+		//@TODO: Do something proper here, render 404 or something
+		log.Println(err)
+		return
+	}
+	daysOfWeek := []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}
+	durations, err := models.TableDurations(schedule)
+	times, err := models.TableTimes(durations)
+	if err != nil {
+		return
+	}
 	data := struct {
 		StartDate time.Time
 		EndDate   time.Time
+		Schedule  myradio.Schedule
+		NumDays   int
+		DaysOfWeek []string
+		Times []string
+		Year      string
+		Week      string
 	}{
 		StartDate: startDate,
 		EndDate:   endDate,
+		Schedule:  schedule,
+		NumDays:   len(schedule),
+		DaysOfWeek: daysOfWeek,
+		Times: times,
+		Year: year,
+		Week: week,
 	}
 
 	err = utils.RenderTemplate(w, sc.config.PageContext, data, "schedule_week.tmpl")

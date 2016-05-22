@@ -46,6 +46,9 @@ func NewServer(c *structs.Config) (*Server, error) {
 	pc := controllers.NewPeopleController(session, c)
 	getRouter.HandleFunc("/people/{id:[0-9]+}/", pc.Get)
 
+	schc := controllers.NewScheduleWeekController(session, c)
+	getRouter.HandleFunc("/schedule/{year:[0-9]+}/{week:[0-9]+}", schc.Get)
+
 	// End routes
 
 	s.UseHandler(router)

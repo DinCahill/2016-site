@@ -5,7 +5,9 @@ import (
 	"html/template"
 	"net/http"
 	"path/filepath"
+	"errors"
 	"fmt"
+	"github.com/bradfitz/iter"
 )
 
 // TemplatePrefix is the constant containing the filepath prefix for templates.
@@ -50,10 +52,28 @@ func RenderTemplate(w http.ResponseWriter, context structs.PageContext, data int
 	}
 
 	t := template.New("base.tmpl")
-	t, err = t.ParseFiles(tmpls...)
 	t.Funcs(template.FuncMap{
 		"html": renderHTML,
+		"N": iter.N,
+		"add": func (a, b int) int {
+			return a + b
+		},
+		"dict": func(values ...interface{}) (map[string]interface{}, error) {
+			if len(values)%2 != 0 {
+				return nil, errors.New("invalid dict call")
+			}
+			dict := make(map[string]interface{}, len(values)/2)
+			for i := 0; i < len(values); i+=2 {
+				key, ok := values[i].(string)
+				if !ok {
+					return nil, errors.New("dict keys must be strings")
+				}
+				dict[key] = values[i+1]
+			}
+			return dict, nil
+		},
 	})
+	t, err = t.ParseFiles(tmpls...)
 	if err != nil {
 		return err
 	}
