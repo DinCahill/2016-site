@@ -92,9 +92,23 @@ func MakeTable(schedule myradio.Schedule) (Table, error) {
 				midnight := time.Date(start.Year(), start.Month(), start.Day(), 0, 0, 0, 0, start.Location())
 				t := midnight.Add(dur)
 				if t.Equal(start) {
+					// Set the cell if the show starts at this time
 					out[durI].Cells[dayI].Timeslot = ts
 					out[durI].Cells[dayI].RowSpan = 1
+					continue
 				}
+			}
+		}
+	}
+	// Set RowSpans
+	for col := 0; col < len(out[0].Cells); col++ {
+		rowspan := 0
+		for _, row := range out {
+			if row.Cells[col].RowSpan == 0 {
+				rowspan++
+			} else {
+				row.Cells[col].RowSpan += rowspan
+				rowspan = 0
 			}
 		}
 	}
