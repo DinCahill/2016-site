@@ -88,8 +88,9 @@ func MakeTable(schedule myradio.Schedule) (Table, error) {
 	for durI, dur := range durations {
 		for dayI, day := range schedule {
 			for _, ts := range day {
+				mbase := day[0].StartTime
 				start := ts.StartTime
-				midnight := time.Date(start.Year(), start.Month(), start.Day(), 0, 0, 0, 0, start.Location())
+				midnight := time.Date(mbase.Year(), mbase.Month(), mbase.Day(), 0, 0, 0, 0, mbase.Location())
 				t := midnight.Add(dur)
 				if t.Equal(start) {
 					// Set the cell if the show starts at this time
