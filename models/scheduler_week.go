@@ -43,6 +43,7 @@ func tin(arr []time.Duration, elem time.Duration) bool {
 // Return a sorted slice of Durations, since midnight, which represent
 // a minimum set of times to be printed on a schedule.
 // Only use when padded with jukebox.
+// TODO: Omit the last value, because it's an end time?
 func TableDurations(schedule myradio.Schedule) (durations DurationSlice, err error) {
 	for _, day := range schedule {
 		dmid := day[0].StartTime
@@ -71,13 +72,41 @@ func TableTimes(durations DurationSlice) (times []string, err error) {
 	return
 }
 
+// Use padded schedule
+func MakeTable(schedule myradio.Schedule) (Table, error) {
+	durations, err := TableDurations(schedule)
+	times, err := TableTimes(durations)
+	if err != nil {
+		return nil, err
+	}
+	// Make structure
+	out := make(Table, len(durations)-1)
+	for i, _ := range out {
+		out[i].TimeStr = times[i]
+		out[i].Cells = make([]TableCell, len(schedule))
+	}
+	for durI, dur := range durations {
+		for dayI, day := range schedule {
+			for _, ts := range day {
+				start := ts.StartTime
+				midnight := time.Date(start.Year(), start.Month(), start.Day(), 0, 0, 0, 0, start.Location())
+				t := midnight.Add(dur)
+				if t.Equal(start) {
+					out[durI].Cells[dayI].Timeslot = ts
+					out[durI].Cells[dayI].RowSpan = 1
+				}
+			}
+		}
+	}
+	return out, nil
+}
+
 type TableCell struct {
 	Timeslot myradio.Timeslot
 	RowSpan  int
 }
 
 type TableRow struct {
-	Date    time.Time
 	TimeStr string
 	Cells   []TableCell
 }

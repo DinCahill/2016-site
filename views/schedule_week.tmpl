@@ -44,12 +44,13 @@
         </tr>
       </thead>
       <tbody>
-        {{range $timesI, $time := .Times}}
+        {{range $rowI, $row := .Table}}
         <tr>
-          {{template "timeRow" dict "t" $time}}
-          {{range $dayIndex, $day := $.PageData.Schedule}}
-            {{$ts := index $day 1}}
-            {{template "timeslot" dict "d" (add 1 $timesI) "id" $ts.TimeslotID "title" $ts.Title "description" $ts.Season.ShowMeta.Description}}
+          {{template "timeRow" dict "t" $row.TimeStr}}
+          {{range $dayI, $err := N $.PageData.NumDays}}
+            {{$cell := index $row.Cells $dayI}}
+            {{$ts := $cell.Timeslot}}
+            {{template "timeslot" dict "d" (add 1 $dayI) "id" $ts.TimeslotID "title" $ts.Title "description" $ts.Season.ShowMeta.Description}}
           {{end}}
         </tr>
         {{end}}

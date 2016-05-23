@@ -164,6 +164,7 @@ func (sc *ScheduleWeekController) Get(w http.ResponseWriter, r *http.Request) {
 	daysOfWeek := []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}
 	durations, err := models.TableDurations(schedule)
 	times, err := models.TableTimes(durations)
+	table, err := models.MakeTable(schedule)
 	if err != nil {
 		return
 	}
@@ -176,6 +177,7 @@ func (sc *ScheduleWeekController) Get(w http.ResponseWriter, r *http.Request) {
 		Times      []string
 		Year       string
 		Week       string
+		Table      models.Table
 	}{
 		StartDate:  startDate,
 		EndDate:    endDate,
@@ -185,6 +187,7 @@ func (sc *ScheduleWeekController) Get(w http.ResponseWriter, r *http.Request) {
 		Times:      times,
 		Year:       year,
 		Week:       week,
+		Table:      table,
 	}
 
 	err = utils.RenderTemplate(w, sc.config.PageContext, data, "schedule_week.tmpl")
