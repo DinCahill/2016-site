@@ -104,14 +104,26 @@ func MakeTable(schedule myradio.Schedule) (Table, error) {
 	// Set RowSpans
 	for col := 0; col < len(out[0].Cells); col++ {
 		rowspan := 0
-		for _, row := range out {
+		for rowI, row := range out {
 			if row.Cells[col].RowSpan == 0 {
 				rowspan++
-			} else {
-				row.Cells[col].RowSpan += rowspan
+			} else if rowI > 0 {
+				prevrow := -10
+				for prevrow = rowI-1; out[prevrow].Cells[col].RowSpan == 0; prevrow-- {
+				}
+				out[prevrow].Cells[col].RowSpan += rowspan
 				rowspan = 0
 			}
 		}
+		// Fix for final day
+		used := 0
+		i := 0
+		for i = len(out) - 1; out[i].Cells[col].RowSpan == 0; i-- {
+		}
+		for j := i; j >= 0; j-- {
+			used += out[j].Cells[col].RowSpan
+		}
+		out[i].Cells[col].RowSpan += len(out) - used
 	}
 	return out, nil
 }

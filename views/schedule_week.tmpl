@@ -16,7 +16,7 @@
 {{define "timeslot"}}
           <td class="schedule-week-day{{.d}}
                      schedule-week-timeslot
-                     block-default" title="{{.description}}" rowspan="1">
+                     block-default" title="{{.description}}" rowspan="{{.rowspan}}">
             <a href="https://ury.org.uk/schedule/shows/timeslots/{{.id}}/">
               {{.rowspan}} {{.title}}
             </a>
@@ -50,7 +50,9 @@
           {{range $dayI, $err := N $.PageData.NumDays}}
             {{$cell := index $row.Cells $dayI}}
             {{$ts := $cell.Timeslot}}
-            {{template "timeslot" dict "d" (add 1 $dayI) "id" $ts.TimeslotID "title" $ts.Title "description" $ts.Season.ShowMeta.Description "rowspan" $cell.RowSpan}}
+            {{if $cell.RowSpan}}
+              {{template "timeslot" dict "d" (add 1 $dayI) "id" $ts.TimeslotID "title" $ts.Title "description" $ts.Season.ShowMeta.Description "rowspan" $cell.RowSpan}}
+            {{end}}
           {{end}}
         </tr>
         {{end}}
