@@ -77,6 +77,7 @@ func TableDurations(schedule myradio.Schedule) (durations DurationSlice, err err
 	sort.Sort(durations)
 	return
 }
+
 func TableTimes(durations DurationSlice) (times []string, err error) {
 	// Convert to time text for schedule
 	times = make([]string, len(durations))
@@ -96,7 +97,7 @@ func MakeTable(schedule myradio.Schedule) (Table, error) {
 	}
 	// Make structure
 	out := make(Table, len(durations)-1)
-	for i, _ := range out {
+	for i := range out {
 		out[i].TimeStr = times[i]
 		out[i].Cells = make([]TableCell, len(schedule))
 	}
@@ -124,7 +125,7 @@ func MakeTable(schedule myradio.Schedule) (Table, error) {
 				rowspan++
 			} else if rowI > 0 {
 				prevrow := -10
-				for prevrow = rowI-1; out[prevrow].Cells[col].RowSpan == 0; prevrow-- {
+				for prevrow = rowI - 1; out[prevrow].Cells[col].RowSpan == 0; prevrow-- {
 				}
 				out[prevrow].Cells[col].RowSpan += rowspan
 				rowspan = 0
