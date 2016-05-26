@@ -41,10 +41,11 @@ func tin(arr []time.Duration, elem time.Duration) bool {
 }
 
 // Return a sorted slice of Durations, since midnight, which represent
-// a minimum set of times to be printed on a schedule.
+// the times to be printed on a schedule, and at on every hour in between.
 // Only use when padded with jukebox.
-// TODO: Omit the last value, because it's an end time?
 func TableDurations(schedule myradio.Schedule) (durations DurationSlice, err error) {
+	// Use a map for uniqueness
+	set := make(map[time.Duration]struct{})
 	for _, day := range schedule {
 		dmid := day[0].StartTime
 		midnight := time.Date(dmid.Year(), dmid.Month(), dmid.Day(), 0, 0, 0, 0, dmid.Location())
@@ -52,12 +53,26 @@ func TableDurations(schedule myradio.Schedule) (durations DurationSlice, err err
 			dstart := ts.StartTime.Sub(midnight)
 			dend := ts.EndTime().Sub(midnight)
 			if !tin(durations, dstart) {
-				durations = append(durations, dstart)
+				set[dstart] = struct{}{}
 			}
 			if !tin(durations, dend) {
-				durations = append(durations, dend)
+				set[dend] = struct{}{}
 			}
 		}
+	}
+	// Pad with hours
+	last := schedule[0][len(schedule[0])-1].EndTime()
+	first := schedule[0][0].StartTime
+	midnight := time.Date(first.Year(), first.Month(), first.Day(), 0, 0, 0, 0, first.Location())
+	for d := first.Sub(midnight); midnight.Add(d).Before(last); d += time.Hour {
+		set[d] = struct{}{}
+	}
+	// Convert to slice
+	durations = make(DurationSlice, len(set))
+	i := 0
+	for k := range set {
+		durations[i] = k
+		i++
 	}
 	sort.Sort(durations)
 	return
