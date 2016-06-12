@@ -31,15 +31,6 @@ func (m *ScheduleModel) GetWeek(year string, week string, padded bool) (schedule
 	return
 }
 
-func tin(arr []time.Duration, elem time.Duration) bool {
-	for _, v := range arr {
-		if v == elem {
-			return true
-		}
-	}
-	return false
-}
-
 // Return a sorted slice of Durations, since midnight, which represent
 // the times to be printed on a schedule, and at on every hour in between.
 // Only use when padded with jukebox.
@@ -52,11 +43,9 @@ func TableDurations(schedule myradio.Schedule) (durations DurationSlice, err err
 		for _, ts := range day {
 			dstart := ts.StartTime.Sub(midnight)
 			dend := ts.EndTime().Sub(midnight)
-			if !tin(durations, dstart) {
-				set[dstart] = struct{}{}
-			}
-			if !tin(durations, dend) {
-				set[dend] = struct{}{}
+			ds := []time.Duration{dstart, dend}
+			for _, d := range ds {
+				set[d] = struct{}{}
 			}
 		}
 	}
