@@ -155,7 +155,16 @@ func (sc *ScheduleWeekController) Get(w http.ResponseWriter, r *http.Request) {
 	}
 	endDate := startDate.AddDate(0, 0, 7)
 
-	schedule, err := sm.GetWeek(year, week, true)
+	iYear, err := strconv.Atoi(year)
+	if err != nil {
+		return
+	}
+	iWeek, err := strconv.Atoi(week)
+	if err != nil {
+		return
+	}
+
+	schedule, err := sm.GetWeek(iYear, iWeek, true)
 	if err != nil {
 		//@TODO: Do something proper here, render 404 or something
 		log.Println(err)
