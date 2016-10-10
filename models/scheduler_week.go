@@ -17,8 +17,8 @@ func NewScheduleModel(s *myradio.Session) *ScheduleModel {
 	return &ScheduleModel{Model{session: s}}
 }
 
-func (m *ScheduleModel) GetWeek(year string, week string, padded bool) (schedule myradio.Schedule, err error) {
-	schedule, err = m.session.GetWeekSchedule(week)
+func (m *ScheduleModel) GetWeek(year int, week int, padded bool) (schedule myradio.Schedule, err error) {
+	schedule, err = m.session.GetWeekSchedule(year, week)
 	if err != nil {
 		return
 	}
@@ -50,8 +50,8 @@ func TableDurations(schedule myradio.Schedule) (durations DurationSlice, err err
 		}
 	}
 	// Pad with hours
-	last := schedule[0][len(schedule[0])-1].EndTime()
-	first := schedule[0][0].StartTime
+	last := schedule[1][len(schedule[1])-1].EndTime()
+	first := schedule[1][0].StartTime
 	midnight := time.Date(first.Year(), first.Month(), first.Day(), 0, 0, 0, 0, first.Location())
 	for d := first.Sub(midnight); midnight.Add(d).Before(last); d += time.Hour {
 		set[d] = struct{}{}
@@ -99,8 +99,8 @@ func MakeTable(schedule myradio.Schedule) (Table, error) {
 				t := midnight.Add(dur)
 				if t.Equal(start) {
 					// Set the cell if the show starts at this time
-					out[durI].Cells[dayI].Timeslot = ts
-					out[durI].Cells[dayI].RowSpan = 1
+					out[durI].Cells[dayI-1].Timeslot = ts
+					out[durI].Cells[dayI-1].RowSpan = 1
 					continue
 				}
 			}
